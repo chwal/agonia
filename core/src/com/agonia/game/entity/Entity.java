@@ -3,7 +3,7 @@ package com.agonia.game.entity;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class Entity {
+public abstract class Entity {
     private float x;
     private float y;
     private float velocity;

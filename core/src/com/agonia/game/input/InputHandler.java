@@ -1,17 +1,19 @@
 package com.agonia.game.input;
 
+import com.agonia.game.Agonia;
 import com.agonia.game.entity.Entity;
 import com.agonia.game.map.GameMap;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class InputHandler {
-    private GameMap gameMap;
-    private Entity player;
+    private final Entity player;
+    private final GameMap gameMap;
 
-    public InputHandler(GameMap gameMap, Entity player) {
-        this.gameMap = gameMap;
-        this.player = player;
+    public InputHandler(Agonia agonia) {
+        gameMap = agonia.getGameMap();
+        player = agonia.getEntityHandler().getPlayer();
     }
 
     public void handleInput() {
