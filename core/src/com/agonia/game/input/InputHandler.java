@@ -5,7 +5,6 @@ import com.agonia.game.entity.Entity;
 import com.agonia.game.map.GameMap;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class InputHandler {
     private final Entity player;

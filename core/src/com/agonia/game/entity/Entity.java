@@ -9,7 +9,7 @@ public abstract class Entity {
     private float velocity;
     private Animation<TextureRegion> animation;
 
-    public Entity(float x, float y, Animation<TextureRegion> animation) {
+    Entity(float x, float y, Animation<TextureRegion> animation) {
         this.x = x;
         this.y = y;
         this.velocity = 100.0f;
@@ -24,7 +24,7 @@ public abstract class Entity {
         return y;
     }
 
-    public Animation<TextureRegion> getAnimation() {
+    Animation<TextureRegion> getAnimation() {
         return animation;
     }
 
