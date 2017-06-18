@@ -20,7 +20,7 @@ public class EntityHandler {
         gameEntities = new ArrayList<>();
         stateTime = 0f;
         Animation<TextureRegion> playerAnimation = Utils.loadAnimation("sprites/player_walking.png", 2, 1);
-        player = new Player(Agonia.WINDOW_WIDTH / 2 - 40, Agonia.WINDOW_HEIGHT / 2, playerAnimation);
+        player = new Player(Agonia.WINDOW_WIDTH, Agonia.WINDOW_HEIGHT, playerAnimation);
         font = new BitmapFont();
     }
 
@@ -37,7 +37,7 @@ public class EntityHandler {
         font.draw(spriteBatch, "X " + player.getX() + " - Y " + player.getY(), 50, 50);
 
         TextureRegion currentFrame = player.getAnimation().getKeyFrame(stateTime, true);
-        spriteBatch.draw(currentFrame, Agonia.WINDOW_WIDTH / 2 - 40, Agonia.WINDOW_HEIGHT / 2);
+        spriteBatch.draw(currentFrame, player.getX(), player.getY());
     }
 
     public Player getPlayer() {
