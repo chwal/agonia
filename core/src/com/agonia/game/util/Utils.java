@@ -1,5 +1,6 @@
 package com.agonia.game.util;
 
+import com.agonia.game.map.GameMap;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -21,6 +22,10 @@ public class Utils {
             }
         }
 
-        return new Animation<TextureRegion>(0.25f, walkFrames);
+        return new Animation<>(0.25f, walkFrames);
+    }
+
+    public static Position toTilePosition(float x, float y) {
+        return new Position(x / GameMap.TILE_SIZE, y / GameMap.TILE_SIZE);
     }
 }

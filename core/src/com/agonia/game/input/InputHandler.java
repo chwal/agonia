@@ -15,21 +15,21 @@ public class InputHandler {
         player = agonia.getEntityHandler().getPlayer();
     }
 
-    public void handleInput() {
+    public void handleInput(float delta) {
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            gameMap.moveEntity(player, Direction.EAST);
+            gameMap.moveEntity(player, Direction.EAST, delta);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            gameMap.moveEntity(player, Direction.NORTH);
+            gameMap.moveEntity(player, Direction.NORTH, delta);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            gameMap.moveEntity(player, Direction.WEST);
+            gameMap.moveEntity(player, Direction.WEST, delta);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            gameMap.moveEntity(player, Direction.SOUTH);
+            gameMap.moveEntity(player, Direction.SOUTH, delta);
         }
     }
 }
