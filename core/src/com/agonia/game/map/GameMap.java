@@ -38,7 +38,6 @@ public class GameMap {
     private Map<Position, GameObject> gameObjects;
 
     private TreePopulation treePopulation;
-    private ShapeRenderer shapeRenderer;
 
     public void initialize(GameCamera gameCamera) {
         this.gameCamera = gameCamera;
@@ -55,7 +54,6 @@ public class GameMap {
         treePopulation = new TreePopulation();
         treePopulation.initialize();
         treePopulation.populateMap(this);
-        shapeRenderer = new ShapeRenderer();
     }
 
     public void render(SpriteBatch spriteBatch) {
@@ -94,7 +92,6 @@ public class GameMap {
                 if(isColliding(newX, newY))
                     return;
 
-                entity.setFacing(Direction.EAST);
                 if(entity instanceof Player)
                     gameCamera.moveCameraHorizontally(direction, newX);
                 break;
@@ -103,7 +100,6 @@ public class GameMap {
                 if(isColliding(newX, newY))
                     return;
 
-                entity.setFacing(Direction.WEST);
                 if(entity instanceof Player)
                     gameCamera.moveCameraHorizontally(direction, newX);
                 break;

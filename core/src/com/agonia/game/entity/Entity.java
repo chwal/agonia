@@ -1,8 +1,12 @@
 package com.agonia.game.entity;
 
 import com.agonia.game.input.Direction;
+import com.agonia.game.item.Item;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Entity {
     private float x;
@@ -11,6 +15,7 @@ public abstract class Entity {
     private boolean moving;
     private Direction facing;
     private Animation<TextureRegion> animation;
+    private List<Item> items;
 
     Entity(float x, float y, float velocity, Animation<TextureRegion> animation) {
         this.x = x;
@@ -19,13 +24,18 @@ public abstract class Entity {
         this.animation = animation;
         this.moving = false;
         this.facing = Direction.EAST;
+        this.items = new ArrayList<>();
+    }
+
+    public List<Item> getItems() {
+        return items;
     }
 
     boolean isMoving() {
         return moving;
     }
 
-    public Direction getFacing() {
+    Direction getFacing() {
         return facing;
     }
 
