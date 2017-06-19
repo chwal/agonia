@@ -16,20 +16,30 @@ public class InputHandler {
     }
 
     public void handleInput(float delta) {
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
+            player.setVelocity(300.0f);
+        } else {
+            player.setVelocity(150.0f);
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.D)) {
             gameMap.moveEntity(player, Direction.EAST, delta);
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+        if(Gdx.input.isKeyPressed(Input.Keys.W)) {
             gameMap.moveEntity(player, Direction.NORTH, delta);
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+        if(Gdx.input.isKeyPressed(Input.Keys.A)) {
             gameMap.moveEntity(player, Direction.WEST, delta);
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+        if(Gdx.input.isKeyPressed(Input.Keys.S)) {
             gameMap.moveEntity(player, Direction.SOUTH, delta);
+        }
+
+        if(!Gdx.input.isKeyPressed(Input.Keys.S) && !Gdx.input.isKeyPressed(Input.Keys.A) && !Gdx.input.isKeyPressed(Input.Keys.W) && !Gdx.input.isKeyPressed(Input.Keys.D)) {
+            player.setMoving(false);
         }
     }
 }

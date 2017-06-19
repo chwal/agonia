@@ -1,6 +1,7 @@
 package com.agonia.game.entity;
 
 import com.agonia.game.Agonia;
+import com.agonia.game.input.Direction;
 import com.agonia.game.util.Utils;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -20,6 +21,7 @@ public class EntityHandler {
         stateTime = 0f;
         Animation<TextureRegion> playerAnimation = Utils.loadAnimation("sprites/player_walking.png", 2, 1);
         player = new Player(700, 2400, playerAnimation);
+        gameEntities.add(player);
     }
 
     public void update(float delta) {
@@ -28,14 +30,20 @@ public class EntityHandler {
 
     public void render(SpriteBatch spriteBatch) {
         spriteBatch.begin();
-
         for (Entity gameEntity : gameEntities) {
-            TextureRegion currentFrame = gameEntity.getAnimation().getKeyFrame(stateTime, true);
-            spriteBatch.draw(currentFrame, gameEntity.getX(), gameEntity.getY());
-        }
+            TextureRegion nextFrame;
 
-        TextureRegion currentFrame = player.getAnimation().getKeyFrame(stateTime, true);
-        spriteBatch.draw(currentFrame, player.getX(), player.getY());
+            if(!gameEntity.isMoving()) {
+                nextFrame = player.getAnimation().getKeyFrames()[0];
+            } else {
+                nextFrame = gameEntity.getAnimation().getKeyFrame(stateTime, true);
+            }
+
+            boolean flip = gameEntity.getFacing() != Direction.EAST;
+            int width = nextFrame.getRegionWidth();
+            float x = gameEntity.getX();
+            spriteBatch.draw(nextFrame, flip ? x + width : x, gameEntity.getY(), flip ? -width : width, nextFrame.getRegionHeight());
+        }
         spriteBatch.end();
     }
 

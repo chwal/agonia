@@ -84,7 +84,7 @@ public class GameMap {
         switch (direction) {
             case NORTH:
                 Position north = Utils.toTilePosition(newX + 20, newY + 20 + distanceCovered);
-                if(isStaticCollisionTile((int) north.x, (int) north.y) || isDynamicCollisionTile((int) north.x, (int) north.y)) {
+                if(isStaticCollisionTile(north.x, north.y) || isDynamicCollisionTile(north.x, north.y)) {
                     return;
                 }
                 newY = newY + distanceCovered;
@@ -93,25 +93,27 @@ public class GameMap {
                 break;
             case EAST:
                 Position east = Utils.toTilePosition(newX + distanceCovered + 20, newY + 20);
-                if(isStaticCollisionTile((int) east.x, (int) east.y) || isDynamicCollisionTile((int) east.x, (int) east.y)) {
+                if(isStaticCollisionTile(east.x, east.y) || isDynamicCollisionTile(east.x, east.y)) {
                     return;
                 }
                 newX = newX + distanceCovered;
+                entity.setFacing(Direction.EAST);
                 if(entity instanceof Player)
                     gameCamera.moveCameraHorizontally(direction, newX);
                 break;
             case WEST:
                 Position west = Utils.toTilePosition(newX - distanceCovered + 20, newY + 20);
-                if(isStaticCollisionTile((int) west.x, (int) west.y) || isDynamicCollisionTile((int) west.x, (int) west.y)) {
+                if(isStaticCollisionTile(west.x, west.y) || isDynamicCollisionTile(west.x, west.y)) {
                     return;
                 }
+                entity.setFacing(Direction.WEST);
                 newX = newX - distanceCovered;
                 if(entity instanceof Player)
                     gameCamera.moveCameraHorizontally(direction, newX);
                 break;
             case SOUTH:
                 Position south = Utils.toTilePosition(newX + 20, newY - distanceCovered + 20);
-                if(isStaticCollisionTile((int) south.x, (int) south.y) || isDynamicCollisionTile((int) south.x, (int) south.y)) {
+                if(isStaticCollisionTile(south.x, south.y) || isDynamicCollisionTile(south.x, south.y)) {
                     return;
                 }
                 newY = newY - distanceCovered;
@@ -120,6 +122,7 @@ public class GameMap {
                 break;
         }
 
+        entity.setMoving(true);
         entity.setX(newX);
         entity.setY(newY);
     }
