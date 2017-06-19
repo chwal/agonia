@@ -18,7 +18,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import javafx.geometry.Pos;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,40 +82,36 @@ public class GameMap {
 
         switch (direction) {
             case NORTH:
-                Position north = Utils.toTilePosition(newX + 20, newY + 20 + distanceCovered);
-                if(isStaticCollisionTile(north.x, north.y) || isDynamicCollisionTile(north.x, north.y)) {
-                    return;
-                }
                 newY = newY + distanceCovered;
+                if(isColliding(newX, newY))
+                    return;
+
                 if(entity instanceof Player)
                     gameCamera.moveCameraVertically(direction, newY);
                 break;
             case EAST:
-                Position east = Utils.toTilePosition(newX + distanceCovered + 20, newY + 20);
-                if(isStaticCollisionTile(east.x, east.y) || isDynamicCollisionTile(east.x, east.y)) {
-                    return;
-                }
                 newX = newX + distanceCovered;
+                if(isColliding(newX, newY))
+                    return;
+
                 entity.setFacing(Direction.EAST);
                 if(entity instanceof Player)
                     gameCamera.moveCameraHorizontally(direction, newX);
                 break;
             case WEST:
-                Position west = Utils.toTilePosition(newX - distanceCovered + 20, newY + 20);
-                if(isStaticCollisionTile(west.x, west.y) || isDynamicCollisionTile(west.x, west.y)) {
-                    return;
-                }
-                entity.setFacing(Direction.WEST);
                 newX = newX - distanceCovered;
+                if(isColliding(newX, newY))
+                    return;
+
+                entity.setFacing(Direction.WEST);
                 if(entity instanceof Player)
                     gameCamera.moveCameraHorizontally(direction, newX);
                 break;
             case SOUTH:
-                Position south = Utils.toTilePosition(newX + 20, newY - distanceCovered + 20);
-                if(isStaticCollisionTile(south.x, south.y) || isDynamicCollisionTile(south.x, south.y)) {
-                    return;
-                }
                 newY = newY - distanceCovered;
+                if(isColliding(newX, newY))
+                    return;
+
                 if(entity instanceof Player)
                     gameCamera.moveCameraVertically(direction, newY);
                 break;
@@ -145,5 +140,10 @@ public class GameMap {
 
     public boolean isDynamicCollisionTile(int xPos, int yPos) {
         return gameObjects.containsKey(new Position(xPos, yPos));
+    }
+
+    private boolean isColliding(float newX, float newY) {
+        Position tilePosition = Utils.toTilePosition(newX + 20, newY + 20);
+        return isStaticCollisionTile(tilePosition.x, tilePosition.y) || isDynamicCollisionTile(tilePosition.x, tilePosition.y) || newY > MAP_HEIGHT - TILE_SIZE || newY < 0 || newX > MAP_WIDTH - TILE_SIZE || newX < 0;
     }
 }
