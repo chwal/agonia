@@ -14,14 +14,12 @@ public class EntityHandler {
     private List<Entity> gameEntities;
     private float stateTime;
     private Player player;
-    private BitmapFont font;
 
     public void initialize() {
         gameEntities = new ArrayList<>();
         stateTime = 0f;
         Animation<TextureRegion> playerAnimation = Utils.loadAnimation("sprites/player_walking.png", 2, 1);
-        player = new Player(Agonia.WINDOW_WIDTH, Agonia.WINDOW_HEIGHT, playerAnimation);
-        font = new BitmapFont();
+        player = new Player(700, 2400, playerAnimation);
     }
 
     public void update(float delta) {
@@ -29,15 +27,16 @@ public class EntityHandler {
     }
 
     public void render(SpriteBatch spriteBatch) {
+        spriteBatch.begin();
+
         for (Entity gameEntity : gameEntities) {
             TextureRegion currentFrame = gameEntity.getAnimation().getKeyFrame(stateTime, true);
             spriteBatch.draw(currentFrame, gameEntity.getX(), gameEntity.getY());
         }
 
-        font.draw(spriteBatch, "X " + player.getX() + " - Y " + player.getY(), 50, 50);
-
         TextureRegion currentFrame = player.getAnimation().getKeyFrame(stateTime, true);
         spriteBatch.draw(currentFrame, player.getX(), player.getY());
+        spriteBatch.end();
     }
 
     public Player getPlayer() {

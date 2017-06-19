@@ -1,15 +1,27 @@
 package com.agonia.game.map;
 
+import com.agonia.game.Agonia;
 import com.agonia.game.camera.GameCamera;
 import com.agonia.game.entity.Entity;
 import com.agonia.game.entity.Player;
+import com.agonia.game.gameobject.GameObject;
 import com.agonia.game.input.Direction;
+import com.agonia.game.map.population.TreePopulation;
 import com.agonia.game.util.Position;
 import com.agonia.game.util.Utils;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import javafx.geometry.Pos;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GameMap {
     public static float MAP_WIDTH;
@@ -24,20 +36,41 @@ public class GameMap {
 
     private GameCamera gameCamera;
 
+    private Map<Position, GameObject> gameObjects;
+
+    private TreePopulation treePopulation;
+    private ShapeRenderer shapeRenderer;
+
     public void initialize(GameCamera gameCamera) {
         this.gameCamera = gameCamera;
-        tiledMap = new TmxMapLoader().load("maps/map.tmx");
-        renderer = new OrthogonalTiledMapRenderer(tiledMap);
-        staticCollisionLayer = (TiledMapTileLayer) tiledMap.getLayers().get("StaticCollisionLayer");
-        blockedTilesLayer = (TiledMapTileLayer) tiledMap.getLayers().get("BlockedTilesLayer");
-        interiorLayer = (TiledMapTileLayer) tiledMap.getLayers().get("InteriorLayer");
+        this.gameObjects = new HashMap<>();
+        this.tiledMap = new TmxMapLoader().load("maps/map.tmx");
+        this.renderer = new OrthogonalTiledMapRenderer(tiledMap);
+        this.staticCollisionLayer = (TiledMapTileLayer) tiledMap.getLayers().get("StaticCollisionLayer");
+        this.blockedTilesLayer = (TiledMapTileLayer) tiledMap.getLayers().get("BlockedTilesLayer");
+        this.interiorLayer = (TiledMapTileLayer) tiledMap.getLayers().get("InteriorLayer");
+
         MAP_WIDTH = staticCollisionLayer.getTileWidth() * staticCollisionLayer.getWidth();
         MAP_HEIGHT = staticCollisionLayer.getTileHeight() * staticCollisionLayer.getHeight();
+
+        treePopulation = new TreePopulation();
+        treePopulation.initialize();
+        treePopulation.populateMap(this);
+        shapeRenderer = new ShapeRenderer();
     }
 
-    public void render() {
+    public void render(SpriteBatch spriteBatch) {
         renderer.setView(gameCamera.getCamera());
+
         renderer.render();
+
+        spriteBatch.begin();
+        for (Map.Entry<Position, GameObject> entry : gameObjects.entrySet()) {
+            Position position = entry.getKey();
+            GameObject gameObject = entry.getValue();
+            spriteBatch.draw(gameObject.getTexture(), position.x * TILE_SIZE, position.y * TILE_SIZE);
+        }
+        spriteBatch.end();
     }
 
     //TODO: Rework collision system (currently uses entity center as fix point)
@@ -50,7 +83,8 @@ public class GameMap {
 
         switch (direction) {
             case NORTH:
-                if(isCollisionTile(Utils.toTilePosition(newX + 20, newY + 20 + distanceCovered))) {
+                Position north = Utils.toTilePosition(newX + 20, newY + 20 + distanceCovered);
+                if(isStaticCollisionTile((int) north.x, (int) north.y) || isDynamicCollisionTile((int) north.x, (int) north.y)) {
                     return;
                 }
                 newY = newY + distanceCovered;
@@ -58,7 +92,8 @@ public class GameMap {
                     gameCamera.moveCameraVertically(direction, newY);
                 break;
             case EAST:
-                if(isCollisionTile(Utils.toTilePosition(newX + distanceCovered + 20, newY + 20))) {
+                Position east = Utils.toTilePosition(newX + distanceCovered + 20, newY + 20);
+                if(isStaticCollisionTile((int) east.x, (int) east.y) || isDynamicCollisionTile((int) east.x, (int) east.y)) {
                     return;
                 }
                 newX = newX + distanceCovered;
@@ -66,7 +101,8 @@ public class GameMap {
                     gameCamera.moveCameraHorizontally(direction, newX);
                 break;
             case WEST:
-                if(isCollisionTile(Utils.toTilePosition(newX - distanceCovered + 20, newY + 20))) {
+                Position west = Utils.toTilePosition(newX - distanceCovered + 20, newY + 20);
+                if(isStaticCollisionTile((int) west.x, (int) west.y) || isDynamicCollisionTile((int) west.x, (int) west.y)) {
                     return;
                 }
                 newX = newX - distanceCovered;
@@ -74,7 +110,8 @@ public class GameMap {
                     gameCamera.moveCameraHorizontally(direction, newX);
                 break;
             case SOUTH:
-                if(isCollisionTile(Utils.toTilePosition(newX + 20, newY - distanceCovered + 20))) {
+                Position south = Utils.toTilePosition(newX + 20, newY - distanceCovered + 20);
+                if(isStaticCollisionTile((int) south.x, (int) south.y) || isDynamicCollisionTile((int) south.x, (int) south.y)) {
                     return;
                 }
                 newY = newY - distanceCovered;
@@ -87,11 +124,23 @@ public class GameMap {
         entity.setY(newY);
     }
 
-    private boolean isCollisionTile(Position position) {
-        return staticCollisionLayer.getCell((int) position.x, (int) position.y) != null;
+    public boolean isStaticCollisionTile(int tileX, int tileY) {
+        return staticCollisionLayer.getCell(tileX, tileY) != null;
+    }
+
+    public boolean isBlockedTile(int tileX, int tileY) {
+        return blockedTilesLayer.getCell(tileX, tileY) != null;
     }
 
     public void dispose() {
         tiledMap.dispose();
+    }
+
+    public void addGameObject(GameObject gameObject, Position position) {
+        gameObjects.put(position, gameObject);
+    }
+
+    public boolean isDynamicCollisionTile(int xPos, int yPos) {
+        return gameObjects.containsKey(new Position(xPos, yPos));
     }
 }

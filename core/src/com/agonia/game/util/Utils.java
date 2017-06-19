@@ -26,6 +26,6 @@ public class Utils {
     }
 
     public static Position toTilePosition(float x, float y) {
-        return new Position(x / GameMap.TILE_SIZE, y / GameMap.TILE_SIZE);
+        return new Position((int)x / GameMap.TILE_SIZE, (int)y / GameMap.TILE_SIZE);
     }
 }

@@ -7,6 +7,7 @@ import com.agonia.game.map.GameMap;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Agonia extends ApplicationAdapter {
@@ -43,12 +44,15 @@ public class Agonia extends ApplicationAdapter {
         inputHandler.handleInput(delta);
         entityHandler.update(delta);
 
-        gameMap.render();
-
         spriteBatch.setProjectionMatrix(gameCamera.getCamera().combined);
-        spriteBatch.begin();
+        gameMap.render(spriteBatch);
         entityHandler.render(spriteBatch);
-        spriteBatch.end();
+
+        SpriteBatch debug = new SpriteBatch();
+        BitmapFont font = new BitmapFont();
+        debug.begin();
+        font.draw(debug, "X " + entityHandler.getPlayer().getX() + " - Y " + entityHandler.getPlayer().getY(), 50, 50);
+        debug.end();
     }
 
     @Override
