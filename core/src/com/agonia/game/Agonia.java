@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class Agonia extends ApplicationAdapter {
     public static final int WINDOW_HEIGHT = 720;
@@ -19,14 +20,15 @@ public class Agonia extends ApplicationAdapter {
     private EntityHandler entityHandler;
     private InputHandler inputHandler;
     private GameCamera gameCamera;
+    private ShapeRenderer shapeRenderer;
 
     @Override
     public void create() {
         gameMap = new GameMap();
         spriteBatch = new SpriteBatch();
-        spriteBatch = new SpriteBatch();
+        shapeRenderer = new ShapeRenderer();
 
-        entityHandler = new EntityHandler();
+        entityHandler = new EntityHandler(gameMap);
         entityHandler.initialize();
 
         gameCamera = new GameCamera(entityHandler.getPlayer());
@@ -45,8 +47,9 @@ public class Agonia extends ApplicationAdapter {
         entityHandler.update(delta);
 
         spriteBatch.setProjectionMatrix(gameCamera.getCamera().combined);
+        shapeRenderer.setProjectionMatrix(spriteBatch.getProjectionMatrix());
         gameMap.render(spriteBatch);
-        entityHandler.render(spriteBatch);
+        entityHandler.render(spriteBatch, shapeRenderer);
 
         SpriteBatch debug = new SpriteBatch();
         BitmapFont font = new BitmapFont();
@@ -66,5 +69,9 @@ public class Agonia extends ApplicationAdapter {
 
     public EntityHandler getEntityHandler() {
         return entityHandler;
+    }
+
+    public GameCamera getGameCamera() {
+        return gameCamera;
     }
 }

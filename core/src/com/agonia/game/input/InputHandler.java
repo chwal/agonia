@@ -1,23 +1,29 @@
 package com.agonia.game.input;
 
 import com.agonia.game.Agonia;
+import com.agonia.game.camera.GameCamera;
+import com.agonia.game.entity.Bullet;
+import com.agonia.game.entity.EntityHandler;
 import com.agonia.game.entity.Player;
-import com.agonia.game.item.Item;
 import com.agonia.game.map.GameMap;
 import com.agonia.game.util.MathUtils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector3;
 
 import java.awt.geom.Point2D;
 
 public class InputHandler {
     private final Player player;
     private final GameMap gameMap;
+    private final GameCamera gameCamera;
+    private final EntityHandler entityHandler;
 
     public InputHandler(Agonia agonia) {
+        gameCamera = agonia.getGameCamera();
         gameMap = agonia.getGameMap();
-        player = agonia.getEntityHandler().getPlayer();
+        entityHandler = agonia.getEntityHandler();
+        player = entityHandler.getPlayer();
     }
 
     public void handleInput(float delta) {
@@ -47,11 +53,22 @@ public class InputHandler {
             player.setMoving(false);
         }
 
-
-        //TODO: Use the actual position of the player (cuz hes not always in the center of the screen)
-        Point2D playerPos = new Point2D.Float(Agonia.WINDOW_WIDTH/2, Agonia.WINDOW_HEIGHT/2);
+        //TODO: Fix yaw calculation when touching top/bottom map restriction
+        Vector3 screenPos = gameCamera.getCamera().project(new Vector3(player.getX(), player.getY(), 0));
+        Point2D playerPos = new Point2D.Float(screenPos.x, screenPos.y);
         Point2D mousePos = new Point2D.Float(Gdx.input.getX(), Gdx.input.getY());
         float angle = MathUtils.getAngle(playerPos, mousePos);
+        if(angle < 270 && angle > 90) {
+            player.setFacing(Direction.WEST);
+        } else {
+            player.setFacing(Direction.EAST);
+        }
+
         player.setYaw(-angle);
+
+        if(Gdx.input.justTouched()) {
+            Point2D direction = MathUtils.angleToDirection(-angle + 90);
+            entityHandler.getBullets().add(new Bullet(player.getX()+ 20, player.getY()+ 20, (float) direction.getX(), (float) direction.getY(), 20));
+        }
     }
 }

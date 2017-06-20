@@ -138,7 +138,7 @@ public class GameMap {
         return gameObjects.containsKey(new Position(xPos, yPos));
     }
 
-    private boolean isColliding(float newX, float newY) {
+    public boolean isColliding(float newX, float newY) {
         Position tilePosition = Utils.toTilePosition(newX + 20, newY + 20);
         return isStaticCollisionTile(tilePosition.x, tilePosition.y) || isDynamicCollisionTile(tilePosition.x, tilePosition.y) || newY > MAP_HEIGHT - TILE_SIZE || newY < 0 || newX > MAP_WIDTH - TILE_SIZE || newX < 0;
     }
