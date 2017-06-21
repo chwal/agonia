@@ -8,10 +8,16 @@ import com.agonia.game.input.Direction;
 import com.agonia.game.interior.Interior;
 import com.agonia.game.interior.InteriorTile;
 import com.agonia.game.interior.Interiors;
+import com.agonia.game.item.Armor;
+import com.agonia.game.item.Item;
 import com.agonia.game.map.population.TreePopulation;
 import com.agonia.game.util.Position;
 import com.agonia.game.util.Utils;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -20,6 +26,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class GameMap {
     public static float MAP_WIDTH;
@@ -35,12 +42,14 @@ public class GameMap {
     private Player player;
 
     private Map<Position, GameObject> gameObjects;
+    private Map<Position, Item> gameItems;
     private Interiors interiors;
 
     public void initialize(GameCamera gameCamera, Player player) {
         this.gameCamera = gameCamera;
         this.player = player;
         this.gameObjects = new HashMap<>();
+        this.gameItems = new HashMap<>();
         this.tiledMap = new TmxMapLoader().load("maps/map.tmx");
         this.renderer = new OrthogonalTiledMapRenderer(tiledMap);
         this.staticCollisionLayer = (TiledMapTileLayer) tiledMap.getLayers().get("StaticCollisionLayer");
@@ -55,10 +64,11 @@ public class GameMap {
 
         interiors = new Interiors(tiledMap);
         interiors.initialize();
+
+        gameItems.put(new Position(16, 62), new Armor(new Texture(Gdx.files.internal("sprites/armor.png")), 0, 0));
     }
 
-
-    public void render(SpriteBatch spriteBatch) {
+    public void render(SpriteBatch spriteBatch, ShapeRenderer shapeRenderer) {
         renderer.setView(gameCamera.getCamera());
 
         Interior currentPlayerInterior = interiors.getInterior(player.getX(), player.getY());
@@ -68,15 +78,33 @@ public class GameMap {
                 TiledMapTile tile = interiorTile.getTile();
                 spriteBatch.draw(tile.getTextureRegion(), interiorTile.getX(), interiorTile.getY());
             }
+            //TODO: Render items within an interior
             //TODO: Render dynamic game object within an interior
             spriteBatch.end();
         } else {
             renderer.render();
 
+
+            for (Map.Entry<Position, Item> itemEntry : gameItems.entrySet()) {
+                Position position = itemEntry.getKey();
+                Item item = itemEntry.getValue();
+                int x = position.x * TILE_SIZE;
+                int y = position.y * TILE_SIZE;
+                spriteBatch.begin();
+                spriteBatch.draw(item.getTexture(), x, y);
+                spriteBatch.end();
+
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+                shapeRenderer.setColor(Color.YELLOW);
+                shapeRenderer.rect(x, y, item.getTexture().getWidth(), item.getTexture().getHeight());
+                shapeRenderer.end();
+            }
+
+
             spriteBatch.begin();
-            for (Map.Entry<Position, GameObject> entry : gameObjects.entrySet()) {
-                Position position = entry.getKey();
-                GameObject gameObject = entry.getValue();
+            for (Map.Entry<Position, GameObject> gameObjectEntry : gameObjects.entrySet()) {
+                Position position = gameObjectEntry.getKey();
+                GameObject gameObject = gameObjectEntry.getValue();
                 spriteBatch.draw(gameObject.getTexture(), position.x * TILE_SIZE, position.y * TILE_SIZE);
             }
             spriteBatch.end();
@@ -126,9 +154,24 @@ public class GameMap {
                 break;
         }
 
+        //TODO: Increase performance (e.g. only check for items when actually changing layer position)
+        Position tilePosition = Utils.toTilePosition(newX + 20, newY + 20);
+        Optional<Map.Entry<Position, Item>> optMapItem = getMapItem(tilePosition.x, tilePosition.y);
+        if(optMapItem.isPresent()) {
+            Map.Entry<Position, Item> itemEntry = optMapItem.get();
+            entity.getItems().add(itemEntry.getValue());
+            gameItems.remove(itemEntry.getKey());
+        }
+
         entity.setMoving(true);
         entity.setX(newX);
         entity.setY(newY);
+    }
+
+    private Optional<Map.Entry<Position, Item>> getMapItem(int tileX, int tileY) {
+        return gameItems.entrySet().stream()
+                .filter(entry -> entry.getKey().x == tileX && entry.getKey().y == tileY)
+                .findFirst();
     }
 
     public boolean isStaticCollisionTile(int tileX, int tileY) {

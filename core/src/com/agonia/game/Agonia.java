@@ -48,7 +48,7 @@ public class Agonia extends ApplicationAdapter {
 
         spriteBatch.setProjectionMatrix(gameCamera.getCamera().combined);
         shapeRenderer.setProjectionMatrix(spriteBatch.getProjectionMatrix());
-        gameMap.render(spriteBatch);
+        gameMap.render(spriteBatch, shapeRenderer);
         entityHandler.render(spriteBatch, shapeRenderer);
 
         SpriteBatch debug = new SpriteBatch();

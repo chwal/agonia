@@ -1,6 +1,8 @@
 package com.agonia.game.entity;
 
 import com.agonia.game.input.Direction;
+import com.agonia.game.item.Armor;
+import com.agonia.game.item.Gun;
 import com.agonia.game.item.Item;
 import com.agonia.game.map.GameMap;
 import com.agonia.game.util.Position;
@@ -32,9 +34,10 @@ public class EntityHandler {
         gameEntities = new ArrayList<>();
         bullets = new ArrayList<>();
         stateTime = 0f;
-        Animation<TextureRegion> playerAnimation = Utils.loadAnimation("sprites/player_walking2.png", 2, 1);
+        Animation<TextureRegion> playerAnimation = Utils.loadAnimation("sprites/player_walking_no_arms.png", 2, 1);
         player = new Player(700, 2400, playerAnimation);
-        player.getItems().add(new Item(new Texture(Gdx.files.internal("sprites/sniper_gun2.png")), 14, 20));
+        player.getItems().add(new Gun(new Texture(Gdx.files.internal("sprites/sniper_gun_with_arm.png")), 14, 20));
+        player.getItems().add(new Armor(new Texture(Gdx.files.internal("sprites/helmet.png")), 0, 0));
         gameEntities.add(player);
     }
 
@@ -60,14 +63,25 @@ public class EntityHandler {
             float entityY = gameEntity.getY();
             spriteBatch.draw(nextEntityAnimFrame, flip ? entityX + entityWidth : entityX, entityY, flip ? -entityWidth : entityWidth, nextEntityAnimFrame.getRegionHeight());
 
+            //Render armor (if equipped?)
             for (Item item : gameEntity.getItems()) {
-                Texture itemTexture = item.getTexture();
-                if(gameEntity instanceof Player) {
-                    Player player = (Player) gameEntity;
-                    float itemX = entityX + item.getxOffset();
-                    float itemY = entityY + item.getyOffset();
-                    int itemWidth = itemTexture.getWidth();
-                    spriteBatch.draw(itemTexture, flip ? itemX + itemWidth / 2 : itemX, itemY, 0, 0, flip ? -itemWidth : itemWidth, itemTexture.getHeight(), 1, 1, flip ? player.getYaw() + 180 : player.getYaw(), 0, 0, itemWidth, itemTexture.getHeight(), false, false);
+                if(item instanceof Armor) {
+                    Texture armorTexture = item.getTexture();
+                    int armorWidth = armorTexture.getWidth();
+                    spriteBatch.draw(armorTexture, flip ? entityX + armorWidth : entityX, entityY, flip ? -armorWidth : armorWidth, armorTexture.getHeight());
+                }
+            }
+
+            if(gameEntity instanceof Player) {
+                Player player = (Player) gameEntity;
+                Gun primaryGun = player.getPrimaryGun();
+
+                if(primaryGun != null) {
+                    Texture gunTexture = primaryGun.getTexture();
+                    float itemX = entityX + primaryGun.getxOffset();
+                    float itemY = entityY + primaryGun.getyOffset();
+                    int itemWidth = gunTexture.getWidth();
+                    spriteBatch.draw(gunTexture, flip ? itemX + itemWidth / 2 : itemX, itemY, 0, 0, flip ? -itemWidth : itemWidth, gunTexture.getHeight(), 1, 1, flip ? player.getYaw() + 180 : player.getYaw(), 0, 0, itemWidth, gunTexture.getHeight(), false, false);
                 }
             }
         }

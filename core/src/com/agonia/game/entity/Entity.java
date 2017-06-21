@@ -15,7 +15,7 @@ public abstract class Entity {
     private boolean moving;
     private Direction facing;
     private Animation<TextureRegion> animation;
-    private List<Item> items;
+    List<Item> items;
 
     Entity(float x, float y, float velocity, Animation<TextureRegion> animation) {
         this.x = x;

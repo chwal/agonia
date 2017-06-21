@@ -2,7 +2,7 @@ package com.agonia.game.item;
 
 import com.badlogic.gdx.graphics.Texture;
 
-public class Item {
+public abstract class Item {
     private Texture texture;
     private float xOffset;
     private float yOffset;
