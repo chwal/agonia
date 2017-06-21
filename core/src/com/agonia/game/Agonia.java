@@ -32,7 +32,7 @@ public class Agonia extends ApplicationAdapter {
         entityHandler.initialize();
 
         gameCamera = new GameCamera(entityHandler.getPlayer());
-        gameMap.initialize(gameCamera);
+        gameMap.initialize(gameCamera, entityHandler.getPlayer());
         gameCamera.initialize();
 
         inputHandler = new InputHandler(this);
