@@ -22,26 +22,20 @@ public class GameCamera {
         camera.update();
     }
 
-    public void moveCameraVertically(Direction direction, float newY) {
+    public void moveCameraVertically(float newY) {
         float playerY = newY + 20;
 
         if(playerY >= Agonia.WINDOW_HEIGHT / 2 && playerY <= GameMap.MAP_HEIGHT - (Agonia.WINDOW_HEIGHT / 2)) {
-            if(direction.equals(Direction.NORTH))
-                camera.position.y = playerY;
-            else
-                camera.position.y = playerY;
+            camera.position.y = (float) Math.round(playerY);
             camera.update();
         }
     }
 
-    public void moveCameraHorizontally(Direction direction, float newX) {
+    public void moveCameraHorizontally(float newX) {
         float playerX = newX + 20;
 
         if(playerX <= GameMap.MAP_WIDTH - (Agonia.WINDOW_WIDTH / 2) && playerX >= Agonia.WINDOW_WIDTH / 2) {
-            if(direction.equals(Direction.EAST))
-                camera.position.x = playerX;
-            else
-                camera.position.x = playerX;
+            camera.position.x = (float) Math.round(playerX);
             camera.update();
         }
     }

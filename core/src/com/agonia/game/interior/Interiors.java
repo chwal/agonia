@@ -1,5 +1,6 @@
 package com.agonia.game.interior;
 
+import com.agonia.game.map.GameMap;
 import com.agonia.game.util.Position;
 import com.agonia.game.util.Utils;
 import com.badlogic.gdx.maps.MapLayer;
@@ -22,7 +23,6 @@ public class Interiors {
         this.interiorObjectsLayer = tiledMap.getLayers().get("Interior");
         this.interiorLayer = (TiledMapTileLayer) tiledMap.getLayers().get("InteriorLayer");
         this.interiors = new ArrayList<>();
-
     }
 
     public void initialize() {
@@ -35,7 +35,7 @@ public class Interiors {
                 float height = rectangleMapObject.getRectangle().getHeight();
                 Interior interior = new Interior(x, y, width, height);
                 for (float i = x; i < x + width; i += 40) {
-                    for (float k = y; k  < y + height; k  += 40) {
+                    for (float k = y; k < y + height; k += 40) {
                         Position tilePosition = Utils.toTilePosition(i, k);
                         TiledMapTileLayer.Cell cell = interiorLayer.getCell(tilePosition.x, tilePosition.y);
                         if(cell != null) {
@@ -52,7 +52,7 @@ public class Interiors {
     //TODO: Increase performance by storing current interior linked to the entity
     public Interior getInterior(float x, float y) {
         for (Interior interior : interiors) {
-            if(x >= interior.getX() && x <= interior.getX() + interior.getWidth() && y >= interior.getY() && y <= interior.getY() + interior.getHeight())
+            if(x >= interior.getX() && x + GameMap.TILE_SIZE <= interior.getX() + interior.getWidth() && y >= interior.getY() && y + GameMap.TILE_SIZE <= interior.getY() + interior.getHeight())
                 return interior;
         }
         return null;

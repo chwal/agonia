@@ -5,6 +5,7 @@ import com.agonia.game.item.Armor;
 import com.agonia.game.item.Gun;
 import com.agonia.game.item.Item;
 import com.agonia.game.map.GameMap;
+import com.agonia.game.util.MathUtils;
 import com.agonia.game.util.Position;
 import com.agonia.game.util.Utils;
 import com.badlogic.gdx.Gdx;
@@ -16,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,7 +92,7 @@ public class EntityHandler {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.BLACK);
 
-        //TODO: Move bullet rendering to seperate class or represent bullet as an entity?
+        //TODO: Move bullet rendering to separate class or represent bullet as an entity?
         //TODO: Use textures for bullet visualisation instead of rendering circles
         List<Bullet> bulletsToRemove = new ArrayList<>();
         for (Bullet bullet : bullets) {

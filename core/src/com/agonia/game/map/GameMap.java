@@ -55,6 +55,11 @@ public class GameMap {
         this.staticCollisionLayer = (TiledMapTileLayer) tiledMap.getLayers().get("StaticCollisionLayer");
         this.blockedTilesLayer = (TiledMapTileLayer) tiledMap.getLayers().get("BlockedTilesLayer");
 
+        //Why do you make me do this libgdx...
+        for (int i = 0; i < tiledMap.getLayers().getCount(); i++) {
+            tiledMap.getLayers().get(i).setVisible(true);
+        }
+
         MAP_WIDTH = staticCollisionLayer.getTileWidth() * staticCollisionLayer.getWidth();
         MAP_HEIGHT = staticCollisionLayer.getTileHeight() * staticCollisionLayer.getHeight();
 
@@ -69,8 +74,6 @@ public class GameMap {
     }
 
     public void render(SpriteBatch spriteBatch, ShapeRenderer shapeRenderer) {
-        renderer.setView(gameCamera.getCamera());
-
         Interior currentPlayerInterior = interiors.getInterior(player.getX(), player.getY());
         if(currentPlayerInterior != null) {
             spriteBatch.begin();
@@ -82,8 +85,8 @@ public class GameMap {
             //TODO: Render dynamic game object within an interior
             spriteBatch.end();
         } else {
-            renderer.render();
-
+            renderer.setView(gameCamera.getCamera());
+            renderer.render(new int[]{tiledMap.getLayers().getIndex("Background"), tiledMap.getLayers().getIndex("StaticCollisionLayer"), tiledMap.getLayers().getIndex("BlockedTilesLayer")});
 
             for (Map.Entry<Position, Item> itemEntry : gameItems.entrySet()) {
                 Position position = itemEntry.getKey();
@@ -99,7 +102,6 @@ public class GameMap {
                 shapeRenderer.rect(x, y, item.getTexture().getWidth(), item.getTexture().getHeight());
                 shapeRenderer.end();
             }
-
 
             spriteBatch.begin();
             for (Map.Entry<Position, GameObject> gameObjectEntry : gameObjects.entrySet()) {
@@ -126,7 +128,7 @@ public class GameMap {
                     return;
 
                 if(entity instanceof Player)
-                    gameCamera.moveCameraVertically(direction, newY);
+                    gameCamera.moveCameraVertically(newY);
                 break;
             case EAST:
                 newX = newX + distanceCovered;
@@ -134,7 +136,7 @@ public class GameMap {
                     return;
 
                 if(entity instanceof Player)
-                    gameCamera.moveCameraHorizontally(direction, newX);
+                    gameCamera.moveCameraHorizontally(newX);
                 break;
             case WEST:
                 newX = newX - distanceCovered;
@@ -142,7 +144,7 @@ public class GameMap {
                     return;
 
                 if(entity instanceof Player)
-                    gameCamera.moveCameraHorizontally(direction, newX);
+                    gameCamera.moveCameraHorizontally(newX);
                 break;
             case SOUTH:
                 newY = newY - distanceCovered;
@@ -150,7 +152,7 @@ public class GameMap {
                     return;
 
                 if(entity instanceof Player)
-                    gameCamera.moveCameraVertically(direction, newY);
+                    gameCamera.moveCameraVertically(newY);
                 break;
         }
 
@@ -194,7 +196,7 @@ public class GameMap {
         return gameObjects.containsKey(new Position(xPos, yPos));
     }
 
-    public boolean isColliding(float newX, float newY) {
+    private boolean isColliding(float newX, float newY) {
         Position tilePosition = Utils.toTilePosition(newX + 20, newY + 20);
         return isStaticCollisionTile(tilePosition.x, tilePosition.y) || isDynamicCollisionTile(tilePosition.x, tilePosition.y) || newY > MAP_HEIGHT - TILE_SIZE || newY < 0 || newX > MAP_WIDTH - TILE_SIZE || newX < 0;
     }

@@ -23,11 +23,11 @@ public class Interior {
         return y;
     }
 
-    public float getWidth() {
+    float getWidth() {
         return width;
     }
 
-    public float getHeight() {
+    float getHeight() {
         return height;
     }
 
